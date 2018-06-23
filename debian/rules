@@ -1,0 +1,9 @@
+#!/usr/bin/make -f
+#export DH_VERBOSE=1
+
+%:
+	dh $@
+
+# No need to submit information when the package is installed
+override_dh_installinit:
+	dh_installinit --no-start -- start 20 2 3 4 5 .

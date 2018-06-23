@@ -1,0 +1,28 @@
+Source: tks-config
+Section: admin
+Priority: optional
+Maintainer: TKS Linux admins <linux-admins@die-tks.info>
+Uploaders: Wolfgang Schweer <wschweer@arcor.de>,
+ NNx <NNx@die-tks.info>,
+ NNy <NNy@die-tks.info>
+Build-Depends: debhelper (>= 11~)
+Standards-Version: 4.1.4
+
+Package: tks-config
+Architecture: all
+Depends:
+ mc,
+ joe,
+ samba,
+ winbind,
+ libpam-winbind,
+ libnss-winbind,
+ cifs-utils,
+ libpam-mount,
+ ntp,
+ firmware-linux-nonfree,
+ ${misc:Depends}
+Description: Integrate a workstation into a network with Linux NT4-style PDC.
+ The package contains configuration to allow one to connect a system via Samba
+ and Winbind to a Linux server that doesn't provide NFS mounting of homedirs
+ nor remote LDAP access.

@@ -1,0 +1,1 @@
+tks-config binary: systemd-service-file-outside-lib etc/systemd/system/gdm.service.d/gdm3.service
