@@ -1,0 +1,7 @@
+# Anpassungen für das EDU-Netz.
+[org.gnome.login-screen]
+disable-user-list=true
+
+[org.gnome.nautilus.preferences]
+click-policy='single'
+#
