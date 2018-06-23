@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE pam_mount SYSTEM "pam_mount.conf.xml.dtd">
+<pam_mount>
+<debug enable="0" />
+<mntoptions allow="nosuid,nodev,loop,encryption,fsck,nonempty,allow_other,workgroup,nosetuids,noexec,nosuid" />
+<mntoptions require="nosuid,nodev" />
+<logout wait="40" hup="0" term="yes" kill="yes" />
+<mkmountpoint enable="1" remove="false" />
+<volume fstype="cifs" server="susi" path="%(USER)" mountpoint="/home/TKS-BO/%(USER)/schulserver" options="workgroup=tks-bo,dir_mode=0700,file_mode=0x700,nosuid,nodev"> <and> <uid>10000-60000</uid> </and> </volume>
+<volume fstype="cifs" server="susi" path="schueler" mountpoint="/home/TKS-BO/%(USER)/schulserver/schueler" options="workgroup=tks-bo,dir_mode=0x700,file_mode=0x644,nosuid,nodev"> <and> <uid>10000-60000</uid> </and> </volume>
+<volume fstype="cifs" server="susi" path="vorlagen" mountpoint="/home/TKS-BO/%(USER)/schulserver/vorlagen" options="workgroup=tks-bo,dir_mode=0x700,file_mode=0x644,nosuid,nodev"> <and> <uid>10000-60000</uid> </and> </volume>
+<volume fstype="cifs" server="susi" path="programme" mountpoint="/home/TKS-BO/%(USER)/schulserver/programme" options="workgroup=tks-bo,dir_mode=0x700,file_mode=0x644,nosuid,nodev"> <and> <uid>10000-60000</uid> </and> </volume>
+<volume fstype="cifs" server="susi" path="quellen" mountpoint="/home/TKS-BO/%(USER)/schulserver/quellen" options="workgroup=tks-bo,dir_mode=0x700,file_mode=0x644,nosuid,nodev"> <and> <uid>10000-60000</uid> </and> </volume>
+<volume fstype="cifs" server="susi" path="cds" mountpoint="/home/TKS-BO/%(USER)/schulserver/cds" options="workgroup=tks-bo,dir_mode=0x700,file_mode=0x644,nosuid,nodev"> <and> <uid>10000-60000</uid> </and> </volume>
+<volume fstype="cifs" server="susi" path="lehrer" mountpoint="/home/TKS-BO/%(USER)/schulserver/lehrer" options="workgroup=tks-bo,dir_mode=0x700,file_mode=0x644,nosuid,nodev"> <and> <sgrp>lehrer</sgrp> </and> <and> <uid>10000-60000</uid> </and> </volume>
+<volume fstype="cifs" server="susi" path="gruppen" mountpoint="/home/TKS-BO/%(USER)/schulserver/gruppen" options="workgroup=tks-bo,dir_mode=0x700,file_mode=0x644,nosuid,nodev"> <and> <sgrp>lehrer</sgrp> </and> <and> <uid>10000-60000</uid> </and> </volume>
+<volume fstype="cifs" server="susi" path="netlogon" mountpoint="/home/TKS-BO/%(USER)/schulserver/netlogon" options="workgroup=tks-bo,dir_mode=0x700,file_mode=0x644,nosuid,nodev"> <and> <user>administrator</user> </and> <and> <uid>10000-60000</uid> </and> </volume>
+</pam_mount>
