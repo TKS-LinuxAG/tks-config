@@ -1,0 +1,12 @@
+#! /bin/sh
+
+# Anpassung für das TKS-Netz.
+# gdm3 erst dann starten, wenn winbind Daten liefern kann.
+
+while [ -z $(wbinfo -u | tail -1) ] ; do
+    echo ""
+    echo "Warten auf den Anmeldeserver im Schulnetz."
+    echo ""
+    service winbind restart
+    sleep 5
+done

@@ -1,0 +1,10 @@
+Skript nach Vergleich mit dem Musterrechner überprüfen (u.a.):
+ - nsswitch.conf
+ - sshd_config rootLogin
+ - unattended upgrades
+
+Für die folgenden Dateien dpkg-divert (preinst, postinst, postrm) verwenden,
+statt die Dateien zu kopieren (Shell-Skript tks-rechner-setup).
+pam_mount.conf.xml
+smb.conf
+environment

@@ -1,0 +1,17 @@
+tks-rechner-setup
+=================
+
+Einbinden eines Debian-Arbeitsplatzrechners in das TKS-Netz
+-------------------------------------------------------------------------
+(1) Den Rechner 'pxe' im entsprechenden Raum 'zwischen' das TKS-Schulnetz
+    und die Clients stellen: Die gekennzeichnete Netzwerkkarte mit dem
+    Schulnetzwerk, die zweite mit dem Switch verbinden, an dem die
+    zu installierenden Rechner angeschlossen sind.
+    (Also ein zusätzliches Netzwerkkabel und ein Stromkabel mitnehmen.)
+(2) Den zu installierenden Rechner vom Netzwerk (PXE) starten lassen.
+    Dazu die richtige Taste drücken (F8 bis F12 probieren).
+(3) Installation starten mit <ENTER> (oder etwas warten).
+
+(4) Den PXE-Server herunterfahren, die ursprüngliche Verkabelung
+    wiederherstellen.
+(5) Auf dem Rechner dieses Skript ausführen.

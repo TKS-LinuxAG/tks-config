@@ -1,0 +1,165 @@
+#!/bin/sh
+#
+# Parameter (Rechnername) testen.
+# -------------------------------
+if [ -z $1 ] ; then
+    clear
+    echo
+    echo
+    echo
+    echo
+    echo ================================================================================
+    echo
+    echo $(tput setaf 1)$(tput setab 7)Es fehlt der Rechnername als Parameter.$(tput sgr 0)
+    echo
+    echo "Aufruf: $0 <rechnername>"
+    echo ================================================================================
+    echo
+    echo
+    echo
+    echo
+    exit 1
+else
+	hostname $1
+	hostname > /etc/hostname
+	if grep -q debian /etc/hosts ; then
+		sed -i "s/debian/$(hostname)/g" /etc/hosts
+	    rm /etc/ssh/ssh_host_*_key*
+	    dpkg-reconfigure openssh-server 2>/dev/null
+        fi
+	echo
+	echo "Als Rechnername wird $(hostname) verwendet."
+	echo
+fi
+
+# Diesen Rechner als Samba-Rechner einrichten.
+# Automatisch gestartete Dienste stoppen, neu konfigurieren.
+# ----------------------------------------------------------
+service smbd stop
+service nmbd stop
+service winbind stop
+sleep 1
+
+cp /usr/share/tks-config/smb.conf /etc/samba
+
+# Die Namensauflösung NSS an winbind anpassen, siehe 'man winbindd'.
+# ------------------------------------------------------------------
+if ! grep -q winbind /etc/nsswitch.conf ; then
+	sed -i '/passwd:/ s/compat/compat winbind/' /etc/nsswitch.conf
+	sed -i '/group:/ s/compat/compat winbind/' /etc/nsswitch.conf
+	sed -i '/hosts:/ s/dns mdns4/dns wins mdns4/' /etc/nsswitch.conf
+fi
+
+# Start der Dienste mit den neuen Einstellungen.
+# ----------------------------------------------
+service smbd start
+service nmbd start
+service winbind start
+
+# Das Einbinden von Verzeichnissen des Schulservers einrichten.
+# -------------------------------------------------------------
+if [ ! -d /home/TKS-BO ] ; then
+    mkdir /home/TKS-BO
+fi
+cp /usr/share/tks-config/pam_mount.conf.xml /etc/security/
+
+# Kopieren von Voreinstellungen für neuen Account erzwingen.
+# ----------------------------------------------------------
+if ! grep -q mkhomedir /etc/pam.d/gdm-password ; then
+sed -i '/pam_loginuid.so/ a\
+session required pam_mkhomedir.so skel=/etc/skel umask=0077 silent\
+' /etc/pam.d/gdm-password
+fi
+
+# Proxy für laufenden Betrieb konfigurieren.
+cp /usr/share/tks-config/environment /etc/
+
+# Unbeaufsichtigte Upgrades: konfigurieren, Zeit setzen.
+# --------------------------------------------------------------------------
+
+
+# Beep auf der Konsole verhindern.
+# --------------------------------
+sed -i 's/# set bell-style none/set bell-style none/' /etc/inputrc
+
+# Automatisches Abmelden (graphische Oberfläche) nach einer Leerlaufzeit
+# von 40 Minuten einrichten.
+# ----------------------------------------------------------------
+# cp /usr/share/tks-config/logind.conf /etc/systemd
+# [bereits erfolgt]
+
+# Zeitsynchronisation mit dem Schulserver einrichten.
+# ---------------------------------------------------
+sed -i '/debian.pool/ d' /etc/ntp.conf
+if ! grep -q susi /etc/ntp.conf ; then
+    echo "server susi iburst" >> /etc/ntp.conf
+fi
+
+# Verzögerung für den Start der graphischen Oberfläche einrichten.
+# ----------------------------------------------------------------
+# cp /usr/share/tks-config/gdm3.service /etc/systemd/system/
+# [bereits erfolgt]
+
+# Caching von winbind abschalten (Option '-n' aktivieren).
+# --------------------------------------------------------
+sed -i 's/#WINBINDD/WINBINDD/' /etc/default/winbind
+
+# Startseite für Firefox auf 'startpage.de' setzen.
+# ---------------------------------------------------
+if ! grep -q startpage /etc/firefox-esr/firefox-esr.js ; then
+echo "pref(\"browser.startup.homepage\",\"data:text/plain,browser.startup.homepage=https://startpage.com\");" \
+>> /etc/firefox-esr/firefox-esr.js
+fi
+
+# GNOME anpassen:
+# - Benutzerliste auf der Anmeldeseite unterdrücken.
+# - Einzelklick aktivieren.
+# - Kompilieren (GNOME verwendet zum schnelleren Start eine Binärdatei).
+# ----------------------------------------------------------------------------
+# cp /usr/share/tks-config/99_tks.gschema.override /usr/share/glib-2.0/schemas/
+# [bereits erfolgt]
+
+glib-compile-schemas /usr/share/glib-2.0/schemas/
+
+# Den Benutzern der Gruppe 'lehrer' erlauben, webbasiert mittels
+# 'http://localhost:631' Drucker einzurichten und zu verwalten.
+# --------------------------------------------------------------
+if ! grep -q lehrer /etc/cups/cups-files.conf ; then
+    sed -i 's/SystemGroup lpadmin/SystemGroup lpadmin lehrer/' /etc/cups/cups-files.conf
+fi
+
+# Benutzerkonto 'gast' löschen.
+# -----------------------------
+if grep -q gast /etc/passwd ; then
+	userdel -rf gast
+fi
+
+# Die Voreinstellung 'PermitRootLogin without-password' ändern.
+# -------------------------------------------------------------
+sed -i 's/RootLogin without-password/RootLogin yes/' /etc/ssh/sshd_config
+
+# Proxy für apt anpassen, da 'linux-pxe' mit apt-cacher-ng nicht permanent läuft.
+# -------------------------------------------------------------------------------
+sed -i 's/pxe.tks-bo.lan:3142/susi:3128/g' /etc/apt/apt.conf
+
+# Den Rechner in die Domäne stellen.
+# ------------------------------
+echo ""
+echo "Passwort des Samba-Administrators eingeben"
+echo ""
+if [ ! -z $2 ] ; then
+	net rpc join -S susi -U administrator%"$2"
+    else
+	net rpc join -S susi -U administrator
+fi
+echo ""
+sleep 1
+service winbind restart
+
+# Neustart.
+#----------
+echo
+echo
+echo "GDM mit neuen Einstellungen neu starten (service gdm3 restart) oder alle Dienste (reboot)."
+echo
+echo

@@ -1,0 +1,4 @@
+#! /bin/sh
+# Clean temporary files in /var/tmp and /home/TKS-BO/
+rm -rf /var/tmp/*/
+rm -rf /home/TKS-BO/*/
