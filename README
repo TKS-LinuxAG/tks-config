@@ -11,7 +11,6 @@ Einbinden eines Debian-Arbeitsplatzrechners in das TKS-Netz
 (2) Den zu installierenden Rechner vom Netzwerk (PXE) starten lassen.
     Dazu die richtige Taste drücken (F8 bis F12 probieren).
 (3) Installation starten mit <ENTER> (oder etwas warten).
-
 (4) Den PXE-Server herunterfahren, die ursprüngliche Verkabelung
     wiederherstellen.
 (5) Auf dem Rechner dieses Skript ausführen.
